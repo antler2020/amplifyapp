@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+From <https://aws.amazon.com/getting-started/hands-on/build-react-app-amplify-graphql/>
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
