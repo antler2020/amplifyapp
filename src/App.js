@@ -22,7 +22,6 @@ import {
 } from "./graphql/mutations";
 
 const client = generateClient();
-//const clientStorage= generateStorageClient();
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
@@ -60,7 +59,7 @@ const App = ({ signOut }) => {
       description: form.get("description"),
       image: image.name,
     };
-    if(!!Date.image) await uploadData({key:data.name, data:image});
+    if(!!data.image) uploadData({ key: data.name, data: image });
     await client.graphql({
       query: createNoteMutation,
       variables: { input: data },
@@ -128,7 +127,7 @@ const App = ({ signOut }) => {
             <Text as="span">{note.description}</Text>
             {note.image && (
               <Image
-                src={note.image}
+                src={note.image.url}
                 alt={`visual aid for ${note.name}`}
                 style={{ width: 400 }}
               />
