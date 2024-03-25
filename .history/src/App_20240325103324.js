@@ -3,7 +3,7 @@ import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
 //import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/api";
-import {uploadData, getUrl, remove} from "aws-amplify/storage"
+import {generateStorageClient} from "aws-amplify/storage"
 //import { API } from "aws-amplify";
 import {
   Button,
@@ -22,7 +22,7 @@ import {
 } from "./graphql/mutations";
 
 const client = generateClient();
-//const clientStorage= generateStorageClient();
+const clientStorage= generateStorageClient();
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
@@ -38,7 +38,7 @@ const App = ({ signOut }) => {
     await Promise.all(
       notesFromAPI.map(async (note) => {
         if (note.image){
-          const url= await getUrl({key:note.name})
+          const url= await clientStorage.get(note.name)
           note.image = url;
         }
         return note;
@@ -60,7 +60,7 @@ const App = ({ signOut }) => {
       description: form.get("description"),
       image: image.name,
     };
-    if(!!Date.image) await uploadData({key:data.name, data:image});
+    if(!!Date.image) await clientStorage.put(data.name, image);
     await client.graphql({
       query: createNoteMutation,
       variables: { input: data },
@@ -69,12 +69,11 @@ const App = ({ signOut }) => {
     event.target.reset();
   }
 
-  async function deleteNote({ id, name }) {
+  async function deleteNote({ id }) {
     /*Like createNote, this function is sending a GraphQL mutation along with some variables, 
     but instead of creating a note, we are deleting a note.*/
     const newNotes = notes.filter((note) => note.id !== id);
     setNotes(newNotes);
-    await remove({key:name});
     await client.graphql({
       query: deleteNoteMutation,
       variables: { input: { id } },
@@ -102,12 +101,6 @@ const App = ({ signOut }) => {
             variation="quiet"
             required
           />
-          <View
-            name="image"
-            as="input"
-            type="file"
-            style={{ alignSelf: "end" }}
-          />
           <Button type="submit" variation="primary">
             Create Note
           </Button>
@@ -126,13 +119,6 @@ const App = ({ signOut }) => {
               {note.name}
             </Text>
             <Text as="span">{note.description}</Text>
-            {note.image && (
-              <Image
-                src={note.image}
-                alt={`visual aid for ${note.name}`}
-                style={{ width: 400 }}
-              />
-            )}
             <Button variation="link" onClick={() => deleteNote(note)}>
               Delete note
             </Button>

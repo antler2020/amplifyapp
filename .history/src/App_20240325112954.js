@@ -3,7 +3,7 @@ import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
 //import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/api";
-import {uploadData, getUrl, remove} from "aws-amplify/storage"
+import {uploadData, getUrl} from "aws-amplify/storage"
 //import { API } from "aws-amplify";
 import {
   Button,
@@ -74,7 +74,7 @@ const App = ({ signOut }) => {
     but instead of creating a note, we are deleting a note.*/
     const newNotes = notes.filter((note) => note.id !== id);
     setNotes(newNotes);
-    await remove({key:name});
+    await clientStorage.remove(name);
     await client.graphql({
       query: deleteNoteMutation,
       variables: { input: { id } },
@@ -129,7 +129,7 @@ const App = ({ signOut }) => {
             {note.image && (
               <Image
                 src={note.image}
-                alt={`visual aid for ${note.name}`}
+                alt={`visual aid for ${notes.name}`}
                 style={{ width: 400 }}
               />
             )}
